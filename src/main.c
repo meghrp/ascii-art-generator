@@ -5,8 +5,15 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-int main() {
-  Image img = load_image("waterfall.jpg");
+int main(int argc, char *argv[]) {
+  if (argc != 2) {
+    fprintf(stderr, "Usage: %s <image_path>\n", argv[0]);
+    return 1;
+  }
+
+  const char *image_path = argv[1];
+
+  Image img = load_image(image_path);
 
   if (!img.data) {
     return 1;
