@@ -1,60 +1,36 @@
+#include "../include/image.h"
+#include "../include/print_image.h"
+#include <stddef.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "../include/stb_image.h"
+int main() {
+  Image img = load_image("waterfall.jpg");
 
-typedef struct {
-  int width;
-  int height;
-  unsigned char *data;
-} Image;
-
-Image* read_image(const char *filename) {
-  Image *image = malloc(sizeof(Image));
-  if (!image) {
-    perror("Error allocating memory");
-    return NULL;
+  if (!img.data) {
+    return 1;
   }
 
-  int channels;
-  image->data = stbi_load(filename, &image->width, &image->height, &channels, 3);
-  
-  if (!image->data) {
-    fprintf(stderr, "Error loading image: %s\n", stbi_failure_reason());
-    free(image);
-    return NULL;
+  printf("Image loaded: %ld x %ld\n", img.width, img.height);
+  printf("Image channels: %ld\n", img.channels);
+
+  struct winsize w;
+  ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+  size_t new_width = w.ws_col;
+  size_t new_height = (size_t)(new_width * img.height / img.width / 2.0);
+
+  Image resized = resize_image(&img, new_width, new_height);
+
+  if (!resized.data) {
+    free_image(&img);
+    return 1;
   }
 
-  return image;
-}
+  print_image(&resized);
 
-void free_image(Image *img) {
-  if (img) {
-    stbi_image_free(img->data);
-    free(img);
-  }
-}
+  free_image(&img);
+  free_image(&resized);
 
-int main(void) {
-  Image *img = read_image("waterfall.jpg");
-  if (!img) return 1;
-
-  printf("Image loaded: %dx%d\n", img->width, img->height);
-
-  int y = 2000;
-  int scale = 8; // adjust for terminal width
-
-  for (int x = 0; x < img->width; x += scale) {
-    int index = (y * img->width + x) * 3;
-    unsigned char r = img->data[index];
-    unsigned char g = img->data[index + 1];
-    unsigned char b = img->data[index + 2];
-
-    printf("\033[48;2;%d;%d;%dm \033[0m", r, g, b);
-  }
-
-  printf("\n");
-  free_image(img);
   return 0;
 }
