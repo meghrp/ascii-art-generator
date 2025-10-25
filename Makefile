@@ -16,7 +16,7 @@ OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SOURCES))
 DEPS = $(OBJECTS:.o=.d)
 
 # Target executable
-TARGET = $(BUILD_DIR)/main
+TARGET = main
 
 # Default target
 all: $(TARGET)
@@ -39,7 +39,7 @@ $(BUILD_DIR):
 
 # Clean build artifacts
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR) $(TARGET)
 
 # Rebuild everything
 rebuild: clean all
