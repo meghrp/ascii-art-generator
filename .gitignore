@@ -1,0 +1,45 @@
+# Build directory
+build/
+
+# Object files
+*.o
+*.obj
+
+# Executables
+*.exe
+*.out
+main
+
+# Dependency files
+*.d
+
+# Core dumps
+core
+core.*
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Misc
+.cache/
+compile_commands.json
