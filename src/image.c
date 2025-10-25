@@ -38,3 +38,32 @@ void free_image(Image *img) {
     img->width = img->height = img->channels = 0;
   }
 }
+
+Image resize_image(const Image *src, size_t new_width, size_t new_height) {
+  size_t channels = src->channels;
+
+  double *data = calloc(new_width * new_height * channels, sizeof(*data));
+  if (!data) {
+    fprintf(stderr, "error: failed to alloc mem for data\n");
+    return (Image){0};
+  }
+
+  for (size_t y = 0; y < new_height; y++) {
+    for (size_t x = 0; x < new_width; x++) {
+      size_t x_old = (size_t)(x * src->width / new_width);
+      size_t y_old = (size_t)(y * src->height / new_height);
+
+      size_t src_index = (y_old * src->width + x_old) * channels;
+      size_t dst_index = (y * new_width + x) * channels;
+
+      for (size_t c = 0; c < channels; c++) {
+        data[dst_index + c] = src->data[src_index + c];
+      }
+    }
+  }
+
+  return (Image){.data = data,
+                 .width = new_width,
+                 .height = new_height,
+                 .channels = channels};
+}
